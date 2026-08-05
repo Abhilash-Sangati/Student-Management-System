@@ -63,7 +63,7 @@ public class Student {
     public String toString() {
         return "Student{" +
                 "id=" + id +
-                ", name='" + name + '\'' +
+                ", name ='" + name + '\'' +
                 ", email='" + email + '\'' +
                 ", course='" + course + '\'' +
                 ", marks=" + marks +
