@@ -1,6 +1,7 @@
 package com.abhilash.studentms.test;
 
 import com.abhilash.studentms.dao.StudentDAO;
+import com.abhilash.studentms.dao.StudentDAOImpl;
 import com.abhilash.studentms.model.Student;
 
 public class TestUpdateStudent {
@@ -15,7 +16,7 @@ public class TestUpdateStudent {
                 99
         );
 
-        StudentDAO dao = new StudentDAO();
+        StudentDAO dao = new StudentDAOImpl();
 
         System.out.println(dao.updateStudent(student));
     }
