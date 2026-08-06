@@ -1,4 +1,6 @@
-package com.abhilash.studentms.util;
+package com.abhilash.studentms.test;
+
+import com.abhilash.studentms.util.DBConnection;
 
 import java.sql.Connection;
 
