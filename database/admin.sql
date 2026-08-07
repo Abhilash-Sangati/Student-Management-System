@@ -1,0 +1,9 @@
+CREATE TABLE ADMIN (
+                       USERNAME VARCHAR2(50) PRIMARY KEY,
+                       PASSWORD VARCHAR2(100) NOT NULL
+);
+
+INSERT INTO ADMIN (USERNAME, PASSWORD)
+VALUES ('admin', 'admin123');
+
+COMMIT;
