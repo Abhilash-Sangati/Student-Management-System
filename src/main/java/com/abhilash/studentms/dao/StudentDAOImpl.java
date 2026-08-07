@@ -149,4 +149,51 @@ public class StudentDAOImpl implements StudentDAO {
 
         return false;
     }
+
+    @Override
+    public List<Student> searchStudents(String keyword) {
+
+        List<Student> studentList = new ArrayList<>();
+
+        String sql = """
+            SELECT *
+            FROM STUDENT
+            WHERE LOWER(NAME) LIKE ?
+               OR LOWER(COURSE) LIKE ?
+               OR LOWER(EMAIL) LIKE ?
+            ORDER BY ID
+            """;
+
+        try (
+                Connection connection = DBConnection.getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(sql)
+        ) {
+
+            String search = "%" + keyword.toLowerCase() + "%";
+
+            preparedStatement.setString(1, search);
+            preparedStatement.setString(2, search);
+            preparedStatement.setString(3, search);
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()) {
+
+                Student student = new Student();
+
+                student.setId(resultSet.getInt("ID"));
+                student.setName(resultSet.getString("NAME"));
+                student.setEmail(resultSet.getString("EMAIL"));
+                student.setCourse(resultSet.getString("COURSE"));
+                student.setMarks(resultSet.getDouble("MARKS"));
+
+                studentList.add(student);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return studentList;
+    }
 }
