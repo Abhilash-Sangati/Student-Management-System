@@ -15,4 +15,6 @@ public interface StudentDAO {
     boolean updateStudent(Student student);
 
     boolean deleteStudent(int id);
+
+    List<Student> searchStudents(String keyword);
 }
