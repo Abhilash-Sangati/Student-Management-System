@@ -19,6 +19,8 @@
 
 <body class="bg-light">
 
+<jsp:include page="includes/navbar.jsp"/>
+
 <div class="container mt-5">
 
     <div class="card shadow">
@@ -107,6 +109,8 @@
     </div>
 
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
 </html>
