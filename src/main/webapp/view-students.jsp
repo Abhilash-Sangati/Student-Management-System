@@ -5,50 +5,92 @@
 <!DOCTYPE html>
 <html>
 <head>
-
     <meta charset="UTF-8">
-
     <title>View Students</title>
-
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
-
 </head>
 
 <body class="bg-light">
 
 <jsp:include page="includes/navbar.jsp"/>
-
 <div class="container mt-5">
-
     <div class="card shadow">
-
         <div class="card-header bg-primary text-white">
             <h3>Student List</h3>
         </div>
 
         <div class="card-body">
 
+            <!-- Success Messages -->
+            <% if ("added".equals(request.getParameter("success"))) { %>
+
+            <div class="alert alert-success alert-dismissible fade show">
+                Student added successfully!
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="alert"></button>
+            </div>
+
+            <% } %>
+
+            <% if ("updated".equals(request.getParameter("success"))) { %>
+
+            <div class="alert alert-success alert-dismissible fade show">
+                Student updated successfully!
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+
+            <% } %>
+
+            <% if ("deleted".equals(request.getParameter("success"))) { %>
+
+            <div class="alert alert-success alert-dismissible fade show">
+                Student deleted successfully!
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+
+            <% } %>
+
+
+            <!-- Error Messages -->
+
+            <% if ("delete".equals(request.getParameter("error"))) { %>
+
+            <div class="alert alert-danger alert-dismissible fade show">
+                Failed to delete student.
+                <button type="button"  class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+
+            <% } %>
+
+            <% if ("update".equals(request.getParameter("error"))) { %>
+
+            <div class="alert alert-danger alert-dismissible fade show">
+                Failed to update student.
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+
+            <% } %>
+
+
+            <!-- Search -->
+
             <form action="searchStudent" method="get" class="mb-4">
 
                 <div class="input-group">
 
-                    <input
-                            type="text"
-                            name="keyword"
-                            class="form-control"
-                            placeholder="Search by Name, Course or Email">
+                    <input type="text" name="keyword" class="form-control" placeholder="Search by Name, Course or Email">
 
-                    <button class="btn btn-primary" type="submit">
-                        Search
-                    </button>
+                    <button class="btn btn-primary" type="submit">Search</button>
 
-                    <a href="viewStudents" class="btn btn-secondary">
-                        Reset
-                    </a>
+                    <a href="viewStudents" class="btn btn-secondary">Reset</a>
 
                 </div>
 
             </form>
+
+
+            <!-- Student Table -->
 
             <table class="table table-bordered table-hover">
 
@@ -72,13 +114,9 @@
 
                 <%
 
-                    List<Student> studentList =
-                            (List<Student>) request.getAttribute("studentList");
-
+                    List<Student> studentList = (List<Student>) request.getAttribute("studentList");
                     if (studentList != null && !studentList.isEmpty()) {
-
                         for (Student student : studentList) {
-
                 %>
 
                 <tr>
@@ -88,16 +126,8 @@
                     <td><%= student.getEmail() %></td>
                     <td><%= student.getCourse() %></td>
                     <td><%= student.getMarks() %></td>
-
                     <td>
-
-                        <a href="editStudent?id=<%= student.getId() %>"
-                           class="btn btn-warning btn-sm">
-
-                            Edit
-
-                        </a>
-
+                        <a href="editStudent?id=<%= student.getId() %>" class="btn btn-warning btn-sm">Edit</a>
                     </td>
 
                     <td>
@@ -124,11 +154,7 @@
 
                 <tr>
 
-                    <td colspan="7" class="text-center text-danger">
-
-                        No Students Found
-
-                    </td>
+                    <td colspan="7" class="text-center text-danger">No Students Found</td>
 
                 </tr>
 
@@ -142,11 +168,8 @@
 
             </table>
 
-            <a href="dashboard" class="btn btn-secondary">
 
-                Back
-
-            </a>
+            <a href="dashboard" class="btn btn-secondary">Back</a>
 
         </div>
 
