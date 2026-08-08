@@ -17,29 +17,33 @@
 
         </button>
 
-        <div class="collapse navbar-collapse"
-             id="navbarNav">
+        <div class="collapse navbar-collapse" id="navbarNav">
 
             <ul class="navbar-nav ms-auto">
 
                 <li class="nav-item">
-                    <a class="nav-link"
-                       href="index.jsp">
+                    <a class="nav-link" href="dashboard">
                         Home
                     </a>
                 </li>
 
                 <li class="nav-item">
-                    <a class="nav-link"
-                       href="add-student.jsp">
+                    <a class="nav-link" href="add-student.jsp">
                         Add Student
                     </a>
                 </li>
 
                 <li class="nav-item">
-                    <a class="nav-link"
-                       href="viewStudents">
+                    <a class="nav-link" href="viewStudents">
                         View Students
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link text-danger"
+                       href="logout"
+                       onclick="return confirm('Are you sure you want to logout?')">
+                        Logout
                     </a>
                 </li>
 
