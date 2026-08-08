@@ -15,9 +15,8 @@ import java.io.IOException;
 public class UpdateStudentServlet extends HttpServlet {
 
     @Override
-    protected void doPost(HttpServletRequest request,
-                          HttpServletResponse response)
-            throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+                         throws ServletException, IOException {
 
         int id = Integer.parseInt(request.getParameter("id"));
         String name = request.getParameter("name");
@@ -28,9 +27,12 @@ public class UpdateStudentServlet extends HttpServlet {
         Student student = new Student(id, name, email, course, marks);
 
         StudentDAO dao = new StudentDAOImpl();
+        boolean status = dao.updateStudent(student);
 
-        dao.updateStudent(student);
-
-        response.sendRedirect("viewStudents");
+        if (status) {
+            response.sendRedirect("viewStudents?success=updated");
+        } else {
+            response.sendRedirect("viewStudents?error=update");
+        }
     }
 }
