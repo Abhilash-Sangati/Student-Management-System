@@ -16,7 +16,7 @@ public class AddStudentServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+                         throws ServletException, IOException {
 
         int id = Integer.parseInt(request.getParameter("id"));
         String name = request.getParameter("name");
@@ -25,15 +25,14 @@ public class AddStudentServlet extends HttpServlet {
         double marks = Double.parseDouble(request.getParameter("marks"));
 
         Student student = new Student(id, name, email, course, marks);
-
         StudentDAO dao = new StudentDAOImpl();
 
         boolean status = dao.addStudent(student);
 
         if (status) {
-            response.sendRedirect("index.jsp");
+            response.sendRedirect("viewStudents?success=added");
         } else {
-            response.getWriter().println("Failed to Add Student");
+            response.sendRedirect("add-student.jsp?error=true");
         }
     }
 }
