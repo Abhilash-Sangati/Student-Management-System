@@ -14,16 +14,17 @@ import java.io.IOException;
 public class DeleteStudentServlet extends HttpServlet {
 
     @Override
-    protected void doGet(HttpServletRequest request,
-                         HttpServletResponse response)
-            throws ServletException, IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+                        throws ServletException, IOException {
 
         int id = Integer.parseInt(request.getParameter("id"));
-
         StudentDAO dao = new StudentDAOImpl();
+        boolean status = dao.deleteStudent(id);
 
-        dao.deleteStudent(id);
-
-        response.sendRedirect("viewStudents");
+        if (status) {
+            response.sendRedirect("viewStudents?success=deleted");
+        } else {
+            response.sendRedirect("viewStudents?error=delete");
+        }
     }
 }
