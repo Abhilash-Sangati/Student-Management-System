@@ -19,29 +19,24 @@ public class DashboardServlet extends HttpServlet {
             throws ServletException, IOException {
 
         StudentDAO dao = new StudentDAOImpl();
-
         List<Student> students = dao.getAllStudents();
 
         int total = students.size();
-
         double highest = 0;
-
-        double sum = 0;
+        double totalMarks = 0;
 
         for (Student student : students) {
-
-            sum += student.getMarks();
-
             if (student.getMarks() > highest) {
                 highest = student.getMarks();
             }
+            totalMarks += student.getMarks();
         }
 
-        double average = total == 0 ? 0 : sum / total;
+        double average = total > 0 ? totalMarks / total : 0;
 
         request.setAttribute("total", total);
         request.setAttribute("highest", highest);
-        request.setAttribute("average", average);
+        request.setAttribute("average", String.format("%.2f", average));
 
         request.getRequestDispatcher("index.jsp")
                 .forward(request, response);
