@@ -4,9 +4,7 @@ import com.abhilash.studentms.dao.StudentDAO;
 import com.abhilash.studentms.dao.StudentDAOImpl;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.*;
 
 import java.io.IOException;
 
@@ -14,10 +12,32 @@ import java.io.IOException;
 public class DeleteStudentServlet extends HttpServlet {
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-                        throws ServletException, IOException {
+    protected void doGet(HttpServletRequest request,
+                         HttpServletResponse response)
+            throws ServletException, IOException {
 
-        int id = Integer.parseInt(request.getParameter("id"));
+        String idParameter = request.getParameter("id");
+
+        if (idParameter == null || idParameter.isBlank()) {
+            response.sendRedirect("viewStudents?error=invalidId");
+            return;
+        }
+
+        int id;
+
+        try {
+            id = Integer.parseInt(idParameter);
+
+            if (id <= 0) {
+                response.sendRedirect("viewStudents?error=invalidId");
+                return;
+            }
+
+        } catch (NumberFormatException e) {
+            response.sendRedirect("viewStudents?error=invalidId");
+            return;
+        }
+
         StudentDAO dao = new StudentDAOImpl();
         boolean status = dao.deleteStudent(id);
 
