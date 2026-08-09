@@ -135,8 +135,9 @@ public class StudentDAOImpl implements StudentDAO {
         String sql = """
                 SELECT * FROM STUDENT
                 WHERE LOWER(NAME) LIKE ?
-                   OR LOWER(COURSE) LIKE ?
                    OR LOWER(EMAIL) LIKE ?
+                   OR LOWER(COURSE) LIKE ?
+                   OR TO_CHAR(ID) LIKE ?
                 ORDER BY ID
                 """;
 
@@ -144,9 +145,11 @@ public class StudentDAOImpl implements StudentDAO {
              PreparedStatement ps = con.prepareStatement(sql)) {
 
             String search = "%" + keyword.toLowerCase() + "%";
+
             ps.setString(1, search);
             ps.setString(2, search);
             ps.setString(3, search);
+            ps.setString(4, search);
 
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
