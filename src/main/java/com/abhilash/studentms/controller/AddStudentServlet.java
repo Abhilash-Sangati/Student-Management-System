@@ -18,13 +18,59 @@ public class AddStudentServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
                          throws ServletException, IOException {
 
-        int id = Integer.parseInt(request.getParameter("id"));
+        String idParameter = request.getParameter("id");
         String name = request.getParameter("name");
         String email = request.getParameter("email");
         String course = request.getParameter("course");
-        double marks = Double.parseDouble(request.getParameter("marks"));
+        String marksParameter = request.getParameter("marks");
+
+        // Validate empty fields
+        if (idParameter == null || idParameter.isBlank()
+                || name == null || name.isBlank()
+                || email == null || email.isBlank()
+                || course == null || course.isBlank()
+                || marksParameter == null || marksParameter.isBlank()) {
+
+            response.sendRedirect("add-student.jsp?error=empty");
+            return;
+        }
+
+        int id;
+        double marks;
+
+        // Validate ID
+        try {
+            id = Integer.parseInt(idParameter);
+            if (id <= 0) {
+                response.sendRedirect("add-student.jsp?error=id");
+                return;
+            }
+        } catch (NumberFormatException e) {
+            response.sendRedirect("add-student.jsp?error=id");
+            return;
+        }
+
+        // Validate marks
+        try {
+            marks = Double.parseDouble(marksParameter);
+
+            if (marks < 0 || marks > 100) {
+                response.sendRedirect("add-student.jsp?error=marks");
+                return;
+            }
+        } catch (NumberFormatException e) {
+            response.sendRedirect("add-student.jsp?error=marks");
+            return;
+        }
+
+        // Validate email
+        if (!email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")) {
+            response.sendRedirect("add-student.jsp?error=email");
+            return;
+        }
 
         Student student = new Student(id, name, email, course, marks);
+
         StudentDAO dao = new StudentDAOImpl();
 
         boolean status = dao.addStudent(student);
@@ -32,7 +78,7 @@ public class AddStudentServlet extends HttpServlet {
         if (status) {
             response.sendRedirect("viewStudents?success=added");
         } else {
-            response.sendRedirect("add-student.jsp?error=true");
+            response.sendRedirect("add-student.jsp?error=database");
         }
     }
 }
