@@ -5,7 +5,9 @@ import com.abhilash.studentms.dao.StudentDAOImpl;
 import com.abhilash.studentms.model.Student;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.*;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 import java.util.List;
@@ -20,11 +22,15 @@ public class SearchStudentServlet extends HttpServlet {
 
         String keyword = request.getParameter("keyword");
 
+        if (keyword == null) {
+            keyword = "";
+        }
+
         StudentDAO dao = new StudentDAOImpl();
+        List<Student> students = dao.searchStudents(keyword);
 
-        List<Student> studentList = dao.searchStudents(keyword);
-
-        request.setAttribute("studentList", studentList);
+        request.setAttribute("studentList", students);
+        request.setAttribute("keyword", keyword);
 
         request.getRequestDispatcher("view-students.jsp")
                 .forward(request, response);
