@@ -29,11 +29,6 @@
                     <a class="nav-link" href="viewStudents">View Students</a>
                 </li>
 
-                <!-- NEW: Pagination -->
-                <li class="nav-item">
-                    <a class="nav-link" href="students">Students (Pages)</a>
-                </li>
-
                 <li class="nav-item">
                     <span class="nav-link text-info">
                         Welcome, <%= session.getAttribute("loggedInUser") %>
