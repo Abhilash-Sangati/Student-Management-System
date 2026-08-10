@@ -13,91 +13,82 @@
 <body class="bg-light">
 
 <jsp:include page="includes/navbar.jsp"/>
+
 <div class="container mt-5">
+
     <div class="card shadow">
+
         <div class="card-header bg-primary text-white">
             <h3>Student List</h3>
         </div>
 
         <div class="card-body">
 
-            <!-- Success Messages -->
             <% if ("added".equals(request.getParameter("success"))) { %>
-
-            <div class="alert alert-success alert-dismissible fade show">
+            <div class="alert alert-success">
                 Student added successfully!
-                <button type="button"
-                        class="btn-close"
-                        data-bs-dismiss="alert"></button>
             </div>
-
             <% } %>
 
             <% if ("updated".equals(request.getParameter("success"))) { %>
-
-            <div class="alert alert-success alert-dismissible fade show">
+            <div class="alert alert-success">
                 Student updated successfully!
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
-
             <% } %>
 
             <% if ("deleted".equals(request.getParameter("success"))) { %>
-
-            <div class="alert alert-success alert-dismissible fade show">
+            <div class="alert alert-success">
                 Student deleted successfully!
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
-
             <% } %>
 
-
-            <!-- Error Messages -->
-
             <% if ("delete".equals(request.getParameter("error"))) { %>
-
-            <div class="alert alert-danger alert-dismissible fade show">
+            <div class="alert alert-danger">
                 Failed to delete student.
-                <button type="button"  class="btn-close" data-bs-dismiss="alert"></button>
             </div>
-
             <% } %>
 
             <% if ("update".equals(request.getParameter("error"))) { %>
-
-            <div class="alert alert-danger alert-dismissible fade show">
+            <div class="alert alert-danger">
                 Failed to update student.
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
-
             <% } %>
 
-
-            <!-- Search -->
+            <% if ("invalidId".equals(request.getParameter("error"))) { %>
+            <div class="alert alert-danger">
+                Invalid student ID.
+            </div>
+            <% } %>
 
             <form action="searchStudent" method="get" class="mb-4">
 
                 <div class="input-group">
 
-                    <input type="text" name="keyword" class="form-control" placeholder="Search by Name, Course or Email">
+                    <input type="text"
+                           name="keyword"
+                           class="form-control"
+                           placeholder="Search by ID, Name, Course or Email"
+                           value="<%= request.getAttribute("keyword") != null
+                                   ? request.getAttribute("keyword")
+                                   : "" %>">
 
-                    <button class="btn btn-primary" type="submit">Search</button>
+                    <button class="btn btn-primary" type="submit">
+                        Search
+                    </button>
 
-                    <a href="viewStudents" class="btn btn-secondary">Reset</a>
+                    <a href="viewStudents" class="btn btn-secondary">
+                        Reset
+                    </a>
 
                 </div>
 
             </form>
-
-
-            <!-- Student Table -->
 
             <table class="table table-bordered table-hover">
 
                 <thead class="table-dark">
 
                 <tr>
-
                     <th>ID</th>
                     <th>Name</th>
                     <th>Email</th>
@@ -105,7 +96,6 @@
                     <th>Marks</th>
                     <th>Edit</th>
                     <th>Delete</th>
-
                 </tr>
 
                 </thead>
@@ -113,9 +103,11 @@
                 <tbody>
 
                 <%
+                    List<Student> studentList =
+                            (List<Student>) request.getAttribute("studentList");
 
-                    List<Student> studentList = (List<Student>) request.getAttribute("studentList");
                     if (studentList != null && !studentList.isEmpty()) {
+
                         for (Student student : studentList) {
                 %>
 
@@ -126,50 +118,48 @@
                     <td><%= student.getEmail() %></td>
                     <td><%= student.getCourse() %></td>
                     <td><%= student.getMarks() %></td>
+
                     <td>
-                        <a href="editStudent?id=<%= student.getId() %>" class="btn btn-warning btn-sm">Edit</a>
+                        <a href="editStudent?id=<%= student.getId() %>"
+                           class="btn btn-warning btn-sm">
+                            Edit
+                        </a>
                     </td>
 
                     <td>
-
                         <a href="deleteStudent?id=<%= student.getId() %>"
                            class="btn btn-danger btn-sm"
                            onclick="return confirm('Are you sure you want to delete this student?')">
-
                             Delete
-
                         </a>
-
                     </td>
 
                 </tr>
 
                 <%
-
                     }
 
                 } else {
-
                 %>
 
                 <tr>
-
-                    <td colspan="7" class="text-center text-danger">No Students Found</td>
-
+                    <td colspan="7"
+                        class="text-center text-danger">
+                        No Students Found
+                    </td>
                 </tr>
 
                 <%
-
                     }
-
                 %>
 
                 </tbody>
 
             </table>
 
-
-            <a href="dashboard" class="btn btn-secondary">Back</a>
+            <a href="dashboard" class="btn btn-secondary">
+                Back
+            </a>
 
         </div>
 
