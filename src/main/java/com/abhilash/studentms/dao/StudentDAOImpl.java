@@ -21,6 +21,7 @@ public class StudentDAOImpl implements StudentDAO {
             ps.setString(3, student.getEmail());
             ps.setString(4, student.getCourse());
             ps.setDouble(5, student.getMarks());
+
             ps.executeUpdate();
             return true;
 
@@ -217,6 +218,87 @@ public class StudentDAOImpl implements StudentDAO {
 
             if (rs.next()) {
                 return rs.getInt(1);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return 0;
+    }
+
+    @Override
+    public List<Student> searchStudentsByPage(String keyword, int page, int pageSize) {
+        List<Student> students = new ArrayList<>();
+
+        int offset = (page - 1) * pageSize;
+        String search = "%" + keyword.toLowerCase() + "%";
+
+        String sql = """
+                SELECT *
+                FROM STUDENT
+                WHERE LOWER(NAME) LIKE ?
+                   OR LOWER(EMAIL) LIKE ?
+                   OR LOWER(COURSE) LIKE ?
+                   OR TO_CHAR(ID) LIKE ?
+                ORDER BY ID
+                OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
+                """;
+
+        try (Connection con = DBConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setString(1, search);
+            ps.setString(2, search);
+            ps.setString(3, search);
+            ps.setString(4, search);
+            ps.setInt(5, offset);
+            ps.setInt(6, pageSize);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    students.add(new Student(
+                            rs.getInt("ID"),
+                            rs.getString("NAME"),
+                            rs.getString("EMAIL"),
+                            rs.getString("COURSE"),
+                            rs.getDouble("MARKS")
+                    ));
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return students;
+    }
+
+    @Override
+    public int getSearchStudentCount(String keyword) {
+        String search = "%" + keyword.toLowerCase() + "%";
+
+        String sql = """
+                SELECT COUNT(*)
+                FROM STUDENT
+                WHERE LOWER(NAME) LIKE ?
+                   OR LOWER(EMAIL) LIKE ?
+                   OR LOWER(COURSE) LIKE ?
+                   OR TO_CHAR(ID) LIKE ?
+                """;
+
+        try (Connection con = DBConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setString(1, search);
+            ps.setString(2, search);
+            ps.setString(3, search);
+            ps.setString(4, search);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
             }
 
         } catch (SQLException e) {
