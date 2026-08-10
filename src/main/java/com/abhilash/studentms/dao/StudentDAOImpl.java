@@ -21,7 +21,6 @@ public class StudentDAOImpl implements StudentDAO {
             ps.setString(3, student.getEmail());
             ps.setString(4, student.getCourse());
             ps.setDouble(5, student.getMarks());
-
             ps.executeUpdate();
             return true;
 
@@ -168,5 +167,62 @@ public class StudentDAOImpl implements StudentDAO {
         }
 
         return students;
+    }
+
+    @Override
+    public List<Student> getStudentsByPage(int page, int pageSize) {
+        List<Student> students = new ArrayList<>();
+
+        int offset = (page - 1) * pageSize;
+
+        String sql = """
+                SELECT *
+                FROM STUDENT
+                ORDER BY ID
+                OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
+                """;
+
+        try (Connection con = DBConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setInt(1, offset);
+            ps.setInt(2, pageSize);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    students.add(new Student(
+                            rs.getInt("ID"),
+                            rs.getString("NAME"),
+                            rs.getString("EMAIL"),
+                            rs.getString("COURSE"),
+                            rs.getDouble("MARKS")
+                    ));
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return students;
+    }
+
+    @Override
+    public int getTotalStudentCount() {
+        String sql = "SELECT COUNT(*) FROM STUDENT";
+
+        try (Connection con = DBConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return 0;
     }
 }
