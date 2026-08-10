@@ -4,10 +4,7 @@ import com.abhilash.studentms.dao.AdminDAO;
 import com.abhilash.studentms.dao.AdminDAOImpl;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.*;
 
 import java.io.IOException;
 
@@ -15,11 +12,19 @@ import java.io.IOException;
 public class LoginServlet extends HttpServlet {
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-                        throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request,
+                          HttpServletResponse response)
+            throws ServletException, IOException {
 
         String username = request.getParameter("username");
         String password = request.getParameter("password");
+
+        if (username == null || username.isBlank()
+                || password == null || password.isBlank()) {
+
+            response.sendRedirect("login.jsp?error=empty");
+            return;
+        }
 
         AdminDAO adminDAO = new AdminDAOImpl();
 
@@ -32,8 +37,7 @@ public class LoginServlet extends HttpServlet {
 
         } else {
 
-            response.sendRedirect("login.jsp?error=true");
-
+            response.sendRedirect("login.jsp?error=invalid");
         }
     }
 }
