@@ -1,7 +1,6 @@
 package com.abhilash.studentms.dao;
 
 import com.abhilash.studentms.model.Student;
-
 import java.util.List;
 
 public interface StudentDAO {
@@ -21,4 +20,8 @@ public interface StudentDAO {
     List<Student> getStudentsByPage(int page, int pageSize);
 
     int getTotalStudentCount();
+
+    List<Student> searchStudentsByPage(String keyword, int page, int pageSize);
+
+    int getSearchStudentCount(String keyword);
 }
