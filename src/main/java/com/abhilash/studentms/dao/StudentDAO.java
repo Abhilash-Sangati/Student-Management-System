@@ -17,4 +17,8 @@ public interface StudentDAO {
     boolean deleteStudent(int id);
 
     List<Student> searchStudents(String keyword);
+
+    List<Student> getStudentsByPage(int page, int pageSize);
+
+    int getTotalStudentCount();
 }
