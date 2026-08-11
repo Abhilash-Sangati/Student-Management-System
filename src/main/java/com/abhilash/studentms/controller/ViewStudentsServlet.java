@@ -2,9 +2,12 @@ package com.abhilash.studentms.controller;
 
 import com.abhilash.studentms.dao.StudentDAO;
 import com.abhilash.studentms.dao.StudentDAOImpl;
+import com.abhilash.studentms.model.Student;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.*;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 import java.util.List;
@@ -13,8 +16,9 @@ import java.util.List;
 public class ViewStudentsServlet extends HttpServlet {
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-                        throws ServletException, IOException {
+    protected void doGet(HttpServletRequest request,
+                         HttpServletResponse response)
+            throws ServletException, IOException {
 
         int page = 1;
         int pageSize = 5;
@@ -34,19 +38,39 @@ public class ViewStudentsServlet extends HttpServlet {
             }
         }
 
+        String sortBy = request.getParameter("sortBy");
+        String sortOrder = request.getParameter("sortOrder");
+
+        if (sortBy == null || sortBy.isEmpty()) {
+            sortBy = "id";
+        }
+
+        if (sortOrder == null || sortOrder.isEmpty()) {
+            sortOrder = "asc";
+        }
+
         StudentDAO dao = new StudentDAOImpl();
 
-        List<com.abhilash.studentms.model.Student> students =
-                dao.getStudentsByPage(page, pageSize);
+        List<Student> students =
+                dao.getStudentsByPageSorted(
+                        page,
+                        pageSize,
+                        sortBy,
+                        sortOrder
+                );
 
         int totalStudents = dao.getTotalStudentCount();
 
-        int totalPages = (int) Math.ceil((double) totalStudents / pageSize);
+        int totalPages =
+                (int) Math.ceil((double) totalStudents / pageSize);
 
         request.setAttribute("studentList", students);
         request.setAttribute("currentPage", page);
         request.setAttribute("totalPages", totalPages);
+        request.setAttribute("sortBy", sortBy);
+        request.setAttribute("sortOrder", sortOrder);
 
-        request.getRequestDispatcher("view-students.jsp").forward(request, response);
+        request.getRequestDispatcher("view-students.jsp")
+                .forward(request, response);
     }
 }
