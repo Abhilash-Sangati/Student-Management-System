@@ -2,6 +2,7 @@ package com.abhilash.studentms.controller;
 
 import com.abhilash.studentms.dao.StudentDAO;
 import com.abhilash.studentms.dao.StudentDAOImpl;
+import com.abhilash.studentms.model.Student;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
@@ -41,10 +42,27 @@ public class SearchStudentServlet extends HttpServlet {
             }
         }
 
+        String sortBy = request.getParameter("sortBy");
+        String sortOrder = request.getParameter("sortOrder");
+
+        if (sortBy == null || sortBy.isEmpty()) {
+            sortBy = "id";
+        }
+
+        if (sortOrder == null || sortOrder.isEmpty()) {
+            sortOrder = "asc";
+        }
+
         StudentDAO dao = new StudentDAOImpl();
 
-        List<com.abhilash.studentms.model.Student> students =
-                dao.searchStudentsByPage(keyword, page, pageSize);
+        List<Student> students =
+                dao.searchStudentsByPageSorted(
+                        keyword,
+                        page,
+                        pageSize,
+                        sortBy,
+                        sortOrder
+                );
 
         int totalStudents =
                 dao.getSearchStudentCount(keyword);
@@ -56,6 +74,8 @@ public class SearchStudentServlet extends HttpServlet {
         request.setAttribute("keyword", keyword);
         request.setAttribute("currentPage", page);
         request.setAttribute("totalPages", totalPages);
+        request.setAttribute("sortBy", sortBy);
+        request.setAttribute("sortOrder", sortOrder);
 
         request.getRequestDispatcher("view-students.jsp")
                 .forward(request, response);
