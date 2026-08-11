@@ -31,4 +31,6 @@ public interface StudentDAO {
     List<Student> searchStudentsByPageSorted(String keyword, int page,
                                              int pageSize, String sortBy,
                                              String sortOrder);
+
+    double getLowestMarks();
 }
