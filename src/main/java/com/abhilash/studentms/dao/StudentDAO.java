@@ -24,4 +24,11 @@ public interface StudentDAO {
     List<Student> searchStudentsByPage(String keyword, int page, int pageSize);
 
     int getSearchStudentCount(String keyword);
+
+    List<Student> getStudentsByPageSorted(int page, int pageSize,
+                                          String sortBy, String sortOrder);
+
+    List<Student> searchStudentsByPageSorted(String keyword, int page,
+                                             int pageSize, String sortBy,
+                                             String sortOrder);
 }
