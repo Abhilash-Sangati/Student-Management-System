@@ -15,16 +15,13 @@ public class StudentDAOImpl implements StudentDAO {
 
         try (Connection con = DBConnection.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
-
             ps.setInt(1, student.getId());
             ps.setString(2, student.getName());
             ps.setString(3, student.getEmail());
             ps.setString(4, student.getCourse());
             ps.setDouble(5, student.getMarks());
-
             ps.executeUpdate();
             return true;
-
         } catch (SQLIntegrityConstraintViolationException e) {
             System.out.println("Duplicate ID or Email.");
             return false;
@@ -42,7 +39,6 @@ public class StudentDAOImpl implements StudentDAO {
         try (Connection con = DBConnection.getConnection();
              PreparedStatement ps = con.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
-
             while (rs.next()) {
                 students.add(new Student(
                         rs.getInt("ID"),
@@ -52,7 +48,6 @@ public class StudentDAOImpl implements StudentDAO {
                         rs.getDouble("MARKS")
                 ));
             }
-
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -66,7 +61,6 @@ public class StudentDAOImpl implements StudentDAO {
 
         try (Connection con = DBConnection.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
-
             ps.setInt(1, id);
 
             try (ResultSet rs = ps.executeQuery()) {
@@ -80,7 +74,6 @@ public class StudentDAOImpl implements StudentDAO {
                     );
                 }
             }
-
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -94,7 +87,6 @@ public class StudentDAOImpl implements StudentDAO {
 
         try (Connection con = DBConnection.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
-
             ps.setString(1, student.getName());
             ps.setString(2, student.getEmail());
             ps.setString(3, student.getCourse());
@@ -102,7 +94,6 @@ public class StudentDAOImpl implements StudentDAO {
             ps.setInt(5, student.getId());
 
             return ps.executeUpdate() > 0;
-
         } catch (SQLIntegrityConstraintViolationException e) {
             System.out.println("Email already exists.");
             return false;
@@ -118,10 +109,8 @@ public class StudentDAOImpl implements StudentDAO {
 
         try (Connection con = DBConnection.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
-
             ps.setInt(1, id);
             return ps.executeUpdate() > 0;
-
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
@@ -145,7 +134,6 @@ public class StudentDAOImpl implements StudentDAO {
              PreparedStatement ps = con.prepareStatement(sql)) {
 
             String search = "%" + keyword.toLowerCase() + "%";
-
             ps.setString(1, search);
             ps.setString(2, search);
             ps.setString(3, search);
@@ -162,7 +150,6 @@ public class StudentDAOImpl implements StudentDAO {
                     ));
                 }
             }
-
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -172,16 +159,74 @@ public class StudentDAOImpl implements StudentDAO {
 
     @Override
     public List<Student> getStudentsByPage(int page, int pageSize) {
+        return getStudentsByPageSorted(page, pageSize, "ID", "ASC");
+    }
+
+    @Override
+    public int getTotalStudentCount() {
+        String sql = "SELECT COUNT(*) FROM STUDENT";
+
+        try (Connection con = DBConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return 0;
+    }
+
+    @Override
+    public List<Student> searchStudentsByPage(String keyword, int page, int pageSize) {
+        return searchStudentsByPageSorted(keyword, page, pageSize, "ID", "ASC");
+    }
+
+    @Override
+    public int getSearchStudentCount(String keyword) {
+        String search = "%" + keyword.toLowerCase() + "%";
+
+        String sql = """
+                SELECT COUNT(*)
+                FROM STUDENT
+                WHERE LOWER(NAME) LIKE ?
+                   OR LOWER(EMAIL) LIKE ?
+                   OR LOWER(COURSE) LIKE ?
+                   OR TO_CHAR(ID) LIKE ?
+                """;
+
+        try (Connection con = DBConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, search);
+            ps.setString(2, search);
+            ps.setString(3, search);
+            ps.setString(4, search);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return 0;
+    }
+
+    @Override
+    public List<Student> getStudentsByPageSorted(int page, int pageSize,
+                                                 String sortBy, String sortOrder) {
         List<Student> students = new ArrayList<>();
 
         int offset = (page - 1) * pageSize;
+        String column = getSortColumn(sortBy);
+        String order = getSortOrder(sortOrder);
 
-        String sql = """
-                SELECT *
-                FROM STUDENT
-                ORDER BY ID
-                OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
-                """;
+        String sql = "SELECT * FROM STUDENT ORDER BY " + column + " " + order +
+                " OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
 
         try (Connection con = DBConnection.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
@@ -200,7 +245,6 @@ public class StudentDAOImpl implements StudentDAO {
                     ));
                 }
             }
-
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -209,29 +253,14 @@ public class StudentDAOImpl implements StudentDAO {
     }
 
     @Override
-    public int getTotalStudentCount() {
-        String sql = "SELECT COUNT(*) FROM STUDENT";
-
-        try (Connection con = DBConnection.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
-
-            if (rs.next()) {
-                return rs.getInt(1);
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return 0;
-    }
-
-    @Override
-    public List<Student> searchStudentsByPage(String keyword, int page, int pageSize) {
+    public List<Student> searchStudentsByPageSorted(String keyword, int page,
+                                                    int pageSize, String sortBy,
+                                                    String sortOrder) {
         List<Student> students = new ArrayList<>();
 
         int offset = (page - 1) * pageSize;
+        String column = getSortColumn(sortBy);
+        String order = getSortOrder(sortOrder);
         String search = "%" + keyword.toLowerCase() + "%";
 
         String sql = """
@@ -241,9 +270,9 @@ public class StudentDAOImpl implements StudentDAO {
                    OR LOWER(EMAIL) LIKE ?
                    OR LOWER(COURSE) LIKE ?
                    OR TO_CHAR(ID) LIKE ?
-                ORDER BY ID
+                ORDER BY %s %s
                 OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
-                """;
+                """.formatted(column, order);
 
         try (Connection con = DBConnection.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
@@ -266,7 +295,6 @@ public class StudentDAOImpl implements StudentDAO {
                     ));
                 }
             }
-
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -274,37 +302,17 @@ public class StudentDAOImpl implements StudentDAO {
         return students;
     }
 
-    @Override
-    public int getSearchStudentCount(String keyword) {
-        String search = "%" + keyword.toLowerCase() + "%";
+    private String getSortColumn(String sortBy) {
+        return switch (sortBy) {
+            case "name" -> "NAME";
+            case "email" -> "EMAIL";
+            case "course" -> "COURSE";
+            case "marks" -> "MARKS";
+            default -> "ID";
+        };
+    }
 
-        String sql = """
-                SELECT COUNT(*)
-                FROM STUDENT
-                WHERE LOWER(NAME) LIKE ?
-                   OR LOWER(EMAIL) LIKE ?
-                   OR LOWER(COURSE) LIKE ?
-                   OR TO_CHAR(ID) LIKE ?
-                """;
-
-        try (Connection con = DBConnection.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
-
-            ps.setString(1, search);
-            ps.setString(2, search);
-            ps.setString(3, search);
-            ps.setString(4, search);
-
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    return rs.getInt(1);
-                }
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return 0;
+    private String getSortOrder(String sortOrder) {
+        return "desc".equalsIgnoreCase(sortOrder) ? "DESC" : "ASC";
     }
 }
