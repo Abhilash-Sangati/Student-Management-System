@@ -15,6 +15,7 @@
 <jsp:include page="includes/navbar.jsp"/>
 
 <div class="container mt-5">
+
     <div class="card shadow">
 
         <div class="card-header bg-primary text-white">
@@ -49,6 +50,16 @@
                     keyword = "";
                 }
 
+                String sortBy = (String) request.getAttribute("sortBy");
+                if (sortBy == null) {
+                    sortBy = "id";
+                }
+
+                String sortOrder = (String) request.getAttribute("sortOrder");
+                if (sortOrder == null) {
+                    sortOrder = "asc";
+                }
+
                 Integer currentPage =
                         (Integer) request.getAttribute("currentPage");
 
@@ -62,6 +73,9 @@
                 if (totalPages == null) {
                     totalPages = 1;
                 }
+
+                List<Student> studentList =
+                        (List<Student>) request.getAttribute("studentList");
             %>
 
             <!-- Search -->
@@ -76,6 +90,14 @@
                            placeholder="Search by ID, Name, Course or Email"
                            value="<%= keyword %>">
 
+                    <input type="hidden"
+                           name="sortBy"
+                           value="<%= sortBy %>">
+
+                    <input type="hidden"
+                           name="sortOrder"
+                           value="<%= sortOrder %>">
+
                     <button class="btn btn-primary" type="submit">
                         Search
                     </button>
@@ -88,11 +110,85 @@
 
             </form>
 
+
+            <!-- Sorting -->
+
+            <form action="<%= keyword.isEmpty() ? "viewStudents" : "searchStudent" %>"
+                  method="get"
+                  class="row g-2 mb-4">
+
+                <input type="hidden"
+                       name="keyword"
+                       value="<%= keyword %>">
+
+                <div class="col-md-4">
+
+                    <select name="sortBy" class="form-select">
+
+                        <option value="id"
+                                <%= "id".equals(sortBy) ? "selected" : "" %>>
+                            Sort by ID
+                        </option>
+
+                        <option value="name"
+                                <%= "name".equals(sortBy) ? "selected" : "" %>>
+                            Sort by Name
+                        </option>
+
+                        <option value="email"
+                                <%= "email".equals(sortBy) ? "selected" : "" %>>
+                            Sort by Email
+                        </option>
+
+                        <option value="course"
+                                <%= "course".equals(sortBy) ? "selected" : "" %>>
+                            Sort by Course
+                        </option>
+
+                        <option value="marks"
+                                <%= "marks".equals(sortBy) ? "selected" : "" %>>
+                            Sort by Marks
+                        </option>
+
+                    </select>
+
+                </div>
+
+                <div class="col-md-4">
+
+                    <select name="sortOrder" class="form-select">
+
+                        <option value="asc"
+                                <%= "asc".equals(sortOrder) ? "selected" : "" %>>
+                            Ascending
+                        </option>
+
+                        <option value="desc"
+                                <%= "desc".equals(sortOrder) ? "selected" : "" %>>
+                            Descending
+                        </option>
+
+                    </select>
+
+                </div>
+
+                <div class="col-md-4">
+
+                    <button class="btn btn-success w-100" type="submit">
+                        Apply Sorting
+                    </button>
+
+                </div>
+
+            </form>
+
+
             <!-- Student Table -->
 
             <table class="table table-bordered table-hover">
 
                 <thead class="table-dark">
+
                 <tr>
                     <th>ID</th>
                     <th>Name</th>
@@ -102,24 +198,27 @@
                     <th>Edit</th>
                     <th>Delete</th>
                 </tr>
+
                 </thead>
 
                 <tbody>
 
                 <%
-                    List<Student> studentList =
-                            (List<Student>) request.getAttribute("studentList");
-
                     if (studentList != null && !studentList.isEmpty()) {
 
                         for (Student student : studentList) {
                 %>
 
                 <tr>
+
                     <td><%= student.getId() %></td>
+
                     <td><%= student.getName() %></td>
+
                     <td><%= student.getEmail() %></td>
+
                     <td><%= student.getCourse() %></td>
+
                     <td><%= student.getMarks() %></td>
 
                     <td>
@@ -136,6 +235,7 @@
                             Delete
                         </a>
                     </td>
+
                 </tr>
 
                 <%
@@ -145,9 +245,14 @@
                 %>
 
                 <tr>
-                    <td colspan="7" class="text-center text-danger">
+
+                    <td colspan="7"
+                        class="text-center text-danger">
+
                         No Students Found
+
                     </td>
+
                 </tr>
 
                 <%
@@ -155,13 +260,16 @@
                 %>
 
                 </tbody>
+
             </table>
+
 
             <!-- Pagination -->
 
             <% if (totalPages > 1) { %>
 
             <nav>
+
                 <ul class="pagination justify-content-center">
 
                     <% if (currentPage > 1) { %>
@@ -171,14 +279,14 @@
                         <% if (!keyword.isEmpty()) { %>
 
                         <a class="page-link"
-                           href="searchStudent?keyword=<%= keyword %>&page=<%= currentPage - 1 %>">
+                           href="searchStudent?keyword=<%= keyword %>&sortBy=<%= sortBy %>&sortOrder=<%= sortOrder %>&page=<%= currentPage - 1 %>">
                             Previous
                         </a>
 
                         <% } else { %>
 
                         <a class="page-link"
-                           href="viewStudents?page=<%= currentPage - 1 %>">
+                           href="viewStudents?sortBy=<%= sortBy %>&sortOrder=<%= sortOrder %>&page=<%= currentPage - 1 %>">
                             Previous
                         </a>
 
@@ -196,14 +304,14 @@
                         <% if (!keyword.isEmpty()) { %>
 
                         <a class="page-link"
-                           href="searchStudent?keyword=<%= keyword %>&page=<%= i %>">
+                           href="searchStudent?keyword=<%= keyword %>&sortBy=<%= sortBy %>&sortOrder=<%= sortOrder %>&page=<%= i %>">
                             <%= i %>
                         </a>
 
                         <% } else { %>
 
                         <a class="page-link"
-                           href="viewStudents?page=<%= i %>">
+                           href="viewStudents?sortBy=<%= sortBy %>&sortOrder=<%= sortOrder %>&page=<%= i %>">
                             <%= i %>
                         </a>
 
@@ -221,14 +329,14 @@
                         <% if (!keyword.isEmpty()) { %>
 
                         <a class="page-link"
-                           href="searchStudent?keyword=<%= keyword %>&page=<%= currentPage + 1 %>">
+                           href="searchStudent?keyword=<%= keyword %>&sortBy=<%= sortBy %>&sortOrder=<%= sortOrder %>&page=<%= currentPage + 1 %>">
                             Next
                         </a>
 
                         <% } else { %>
 
                         <a class="page-link"
-                           href="viewStudents?page=<%= currentPage + 1 %>">
+                           href="viewStudents?sortBy=<%= sortBy %>&sortOrder=<%= sortOrder %>&page=<%= currentPage + 1 %>">
                             Next
                         </a>
 
@@ -239,16 +347,20 @@
                     <% } %>
 
                 </ul>
+
             </nav>
 
             <% } %>
+
 
             <a href="dashboard" class="btn btn-secondary">
                 Back
             </a>
 
         </div>
+
     </div>
+
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
