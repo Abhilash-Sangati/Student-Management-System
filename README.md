@@ -39,6 +39,24 @@ The application allows an administrator to manage student records through a web 
 * IntelliJ IDEA
 * Git and GitHub
 
+## Screenshots
+
+### Login
+
+![Login Page](screenshots/login.png)
+
+### Dashboard
+
+![Dashboard](screenshots/dashboard.png)
+
+### Student List
+
+![Student List](screenshots/student-list.png)
+
+### Student Details
+
+![Student Details](screenshots/student-details.png)
+
 ## Architecture
 
 The project follows a Servlet/JSP architecture with the DAO pattern.
@@ -101,6 +119,12 @@ StudentManagementSystem
 │   ├── admin.sql
 │   └── schema.sql
 │
+├── screenshots
+│   ├── login.png
+│   ├── dashboard.png
+│   ├── student-list.png
+│   └── student-details.png
+│
 ├── src
 │   ├── main
 │   │   ├── java
@@ -151,7 +175,13 @@ StudentManagementSystem
 │   │       └── view-students.jsp
 │   │
 │   └── test
-│       └── DAO and database test classes
+│       ├── TestAdminDAO.java
+│       ├── TestConnection.java
+│       ├── TestDeleteStudent.java
+│       ├── TestGetAllStudents.java
+│       ├── TestGetStudentById.java
+│       ├── TestStudentDAO.java
+│       └── TestUpdateStudent.java
 │
 ├── pom.xml
 ├── .gitignore
@@ -341,16 +371,17 @@ This separation makes the application easier to maintain and organize.
 
 ## Testing
 
-The project contains test classes for database and DAO operations, including tests related to:
+The project includes test classes for database connectivity and DAO operations, including:
 
-* Database Connection
-* Admin DAO
-* Student DAO
-* Add Student
-* Get All Students
-* Get Student By ID
-* Update Student
-* Delete Student
+* `TestConnection`
+* `TestAdminDAO`
+* `TestStudentDAO`
+* `TestGetAllStudents`
+* `TestGetStudentById`
+* `TestUpdateStudent`
+* `TestDeleteStudent`
+
+These tests are used to verify database connectivity and important student and administrator database operations.
 
 ## How to Run
 
@@ -367,9 +398,11 @@ Install and configure:
 ### Database Setup
 
 1. Start Oracle Database.
-2. Create/configure the required database user.
+2. Create or configure the required database user.
 3. Execute the SQL scripts from the `database` directory.
-4. Configure the database connection in the application.
+4. Configure the Oracle database URL, username, and password in the application's database connection configuration.
+
+> Do not commit database passwords or other sensitive credentials to GitHub.
 
 ### Run the Project
 
@@ -407,7 +440,6 @@ Git is used for version control.
 The project was developed using separate commits for different features and changes.
 
 The final project is maintained in a GitHub repository.
-
 
 ## Author
 

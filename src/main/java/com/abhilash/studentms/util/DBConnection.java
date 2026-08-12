@@ -6,30 +6,30 @@ import java.sql.SQLException;
 
 public class DBConnection {
 
-    private static final String URL = "jdbc:oracle:thin:@localhost:1521/orclpdb";
-    private static final String USERNAME = "Abhilash";
-    private static final String PASSWORD = "abhi123";
+    private static final String URL = System.getenv("STUDENT_DB_URL");
+    private static final String USERNAME = System.getenv("STUDENT_DB_USERNAME");
+    private static final String PASSWORD = System.getenv("STUDENT_DB_PASSWORD");
 
-    public static Connection getConnection() {
-
-        Connection connection = null;
-
+    static {
         try {
-            Class.forName("oracle.jdbc.driver.OracleDriver");
-
-            connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
-
-            System.out.println("Database Connected Successfully.");
-
+            Class.forName("oracle.jdbc.OracleDriver");
         } catch (ClassNotFoundException e) {
-            System.out.println("Oracle JDBC Driver Not Found.");
-            e.printStackTrace();
+            throw new RuntimeException("Oracle JDBC Driver not found.", e);
+        }
+    }
 
-        } catch (SQLException e) {
-            System.out.println("Database Connection Failed.");
-            e.printStackTrace();
+    public static Connection getConnection() throws SQLException {
+
+        if (URL == null || USERNAME == null || PASSWORD == null) {
+            throw new SQLException(
+                    "Database environment variables are not configured."
+            );
         }
 
-        return connection;
+        return DriverManager.getConnection(
+                URL,
+                USERNAME,
+                PASSWORD
+        );
     }
 }
